@@ -1,0 +1,101 @@
+name: Deploy to Production
+
+on:
+  push:
+    branches:
+      - main
+      - master
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: |
+          npm ci
+          cd apps/api && npm ci
+          cd ../ui && npm ci
+
+      - name: Run tests
+        run: |
+          cd apps/api && npm test
+          cd ../ui && npm test
+
+      - name: Build applications
+        run: |
+          cd apps/api && npm run build
+          cd ../ui && npm run build
+
+      - name: Install PM2
+        run: npm install pm2 -g
+
+      - name: Setup SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -H ${{ secrets.SERVER_IP }} >> ~/.ssh/known_hosts
+
+      - name: Deploy to server
+        env:
+          SERVER_IP: ${{ secrets.SERVER_IP }}
+          SERVER_USER: ${{ secrets.SERVER_USER }}
+          DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
+        run: |
+          # Create deployment script
+          echo "#!/bin/bash
+          set -e
+          
+          echo '🚀 Starting deployment...'
+          
+          # Navigate to app directory
+          cd \$DEPLOY_PATH
+          
+          # Pull latest changes
+          git pull origin main
+          
+          # Install dependencies
+          npm ci
+          cd apps/api && npm ci
+          cd ../ui && npm ci
+          
+          # Build applications
+          cd ../api && npm run build
+          cd ../ui && npm run build
+          
+          # Copy production env files if they don't exist
+          [ ! -f apps/api/.env ] && cp apps/api/.env.production apps/api/.env
+          [ ! -f apps/ui/.env ] && cp apps/ui/.env.production apps/ui/.env
+          
+          # Restart PM2 processes
+          pm2 restart niazitribe-api
+          pm2 restart niazitribe-ui
+          
+          echo '✅ Deployment completed!'
+          " > deploy.sh
+          
+          chmod +x deploy.sh
+          
+          # Copy deployment script and execute
+          scp -i ~/.ssh/deploy_key deploy.sh $SERVER_USER@$SERVER_IP:/tmp/
+          ssh -i ~/.ssh/deploy_key $SERVER_USER@$SERVER_IP "bash /tmp/deploy.sh"
+
+      - name: Notify on success
+        if: success()
+        run: |
+          echo "✅ Deployment successful!"
+
+      - name: Notify on failure
+        if: failure()
+        run: |
+          echo "❌ Deployment failed!" 

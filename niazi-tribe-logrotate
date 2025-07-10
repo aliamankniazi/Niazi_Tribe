@@ -1,0 +1,14 @@
+/var/log/niazi-tribe/*.log {
+    daily
+    rotate 14
+    compress
+    delaycompress
+    missingok
+    notifempty
+    create 0640 www-data www-data
+    sharedscripts
+    postrotate
+        /usr/lib/php/php8.1-fpm-reopenlogs
+        /usr/bin/pm2 flush
+    endscript
+} 

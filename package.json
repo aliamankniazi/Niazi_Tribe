@@ -1,0 +1,25 @@
+{
+  "name": "niazi-tribe",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "turbo run dev --parallel",
+    "build": "turbo run build",
+    "test": "turbo run test",
+    "lint": "turbo run lint",
+    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+    "clean": "turbo run clean && rm -rf node_modules",
+    "postinstall": "husky install"
+  },
+  "devDependencies": {
+    "husky": "^9.0.11",
+    "prettier": "^3.3.1",
+    "turbo": "^2.0.4"
+  },
+  "packageManager": "npm@10.9.2",
+  "workspaces": [
+    "apps/ui",
+    "apps/php-api",
+    "packages/*"
+  ]
+}
