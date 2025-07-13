@@ -1,0 +1,157 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function getUserRole(treeId) {
+      let access = get(/databases/$(database)/documents/treeAccess/$(request.auth.uid)_$(treeId));
+      return access != null ? access.data.role : null;
+    }
+    
+    function hasTreeAccess(treeId, requiredRole) {
+      let userRole = getUserRole(treeId);
+      let roles = ['viewer', 'editor', 'owner'];
+      let userRoleIndex = roles.indexOf(userRole);
+      let requiredRoleIndex = roles.indexOf(requiredRole);
+      return userRoleIndex >= requiredRoleIndex;
+    }
+    
+    function isTreePublic(treeId) {
+      let tree = get(/databases/$(database)/documents/trees/$(treeId));
+      return tree != null && tree.data.isPublic == true;
+    }
+
+    function isValidMetadata() {
+      let metadata = request.resource.data.metadata;
+      return metadata.createdAt is timestamp &&
+             metadata.createdBy is string &&
+             metadata.updatedAt is timestamp &&
+             metadata.updatedBy is string &&
+             metadata.version is number;
+    }
+
+    // Tree rules
+    match /trees/{treeId} {
+      allow read: if isAuthenticated() && 
+        (hasTreeAccess(treeId, 'viewer') || isTreePublic(treeId));
+      allow create: if isAuthenticated() &&
+        request.resource.data.ownerId == request.auth.uid &&
+        isValidMetadata();
+      allow update: if isAuthenticated() && 
+        hasTreeAccess(treeId, 'owner') &&
+        isValidMetadata();
+      allow delete: if isAuthenticated() && 
+        hasTreeAccess(treeId, 'owner');
+    }
+
+    // Tree access rules
+    match /treeAccess/{accessId} {
+      allow read: if isAuthenticated() && 
+        (request.auth.uid == resource.data.userId || 
+         hasTreeAccess(resource.data.treeId, 'owner'));
+      allow create: if isAuthenticated() && 
+        hasTreeAccess(request.resource.data.treeId, 'owner');
+      allow update, delete: if isAuthenticated() && 
+        hasTreeAccess(resource.data.treeId, 'owner');
+    }
+
+    // Person rules
+    match /persons/{personId} {
+      allow read: if isAuthenticated() &&
+        (hasTreeAccess(resource.data.treeId, 'viewer') ||
+         isTreePublic(resource.data.treeId));
+      allow create: if isAuthenticated() &&
+        hasTreeAccess(request.resource.data.treeId, 'editor') &&
+        isValidMetadata();
+      allow update: if isAuthenticated() &&
+        hasTreeAccess(resource.data.treeId, 'editor') &&
+        resource.data.treeId == request.resource.data.treeId &&
+        isValidMetadata();
+      allow delete: if isAuthenticated() &&
+        hasTreeAccess(resource.data.treeId, 'editor');
+    }
+
+    // Relationship rules
+    match /relationships/{relationshipId} {
+      allow read: if isAuthenticated() &&
+        (hasTreeAccess(resource.data.treeId, 'viewer') ||
+         isTreePublic(resource.data.treeId));
+      allow create: if isAuthenticated() &&
+        hasTreeAccess(request.resource.data.treeId, 'editor') &&
+        isValidMetadata();
+      allow update: if isAuthenticated() &&
+        hasTreeAccess(resource.data.treeId, 'editor') &&
+        resource.data.treeId == request.resource.data.treeId &&
+        resource.data.from == request.resource.data.from &&
+        resource.data.to == request.resource.data.to &&
+        isValidMetadata();
+      allow delete: if isAuthenticated() &&
+        hasTreeAccess(resource.data.treeId, 'editor');
+    }
+
+    // Media rules
+    match /media/{mediaId} {
+      allow read: if isAuthenticated() &&
+        (hasTreeAccess(resource.data.treeId, 'viewer') ||
+         isTreePublic(resource.data.treeId));
+      allow create: if isAuthenticated() &&
+        hasTreeAccess(request.resource.data.treeId, 'editor') &&
+        isValidMetadata();
+      allow update: if isAuthenticated() &&
+        hasTreeAccess(resource.data.treeId, 'editor') &&
+        resource.data.treeId == request.resource.data.treeId &&
+        isValidMetadata();
+      allow delete: if isAuthenticated() &&
+        hasTreeAccess(resource.data.treeId, 'editor');
+    }
+
+    // Event rules
+    match /events/{eventId} {
+      allow read: if isAuthenticated() &&
+        (hasTreeAccess(resource.data.treeId, 'viewer') ||
+         isTreePublic(resource.data.treeId));
+      allow create: if isAuthenticated() &&
+        hasTreeAccess(request.resource.data.treeId, 'editor') &&
+        isValidMetadata();
+      allow update: if isAuthenticated() &&
+        hasTreeAccess(resource.data.treeId, 'editor') &&
+        resource.data.treeId == request.resource.data.treeId &&
+        isValidMetadata();
+      allow delete: if isAuthenticated() &&
+        hasTreeAccess(resource.data.treeId, 'editor');
+    }
+
+    // Note rules
+    match /notes/{noteId} {
+      allow read: if isAuthenticated() &&
+        (hasTreeAccess(resource.data.treeId, 'viewer') ||
+         isTreePublic(resource.data.treeId));
+      allow create: if isAuthenticated() &&
+        hasTreeAccess(request.resource.data.treeId, 'editor') &&
+        isValidMetadata();
+      allow update: if isAuthenticated() &&
+        hasTreeAccess(resource.data.treeId, 'editor') &&
+        resource.data.treeId == request.resource.data.treeId &&
+        isValidMetadata();
+      allow delete: if isAuthenticated() &&
+        hasTreeAccess(resource.data.treeId, 'editor');
+    }
+
+    // Tree invite rules
+    match /treeInvites/{inviteId} {
+      allow read: if isAuthenticated() &&
+        (request.auth.uid == resource.data.invitedBy ||
+         hasTreeAccess(resource.data.treeId, 'owner'));
+      allow create: if isAuthenticated() &&
+        hasTreeAccess(request.resource.data.treeId, 'owner');
+      allow update: if isAuthenticated() &&
+        (request.auth.uid == resource.data.invitedBy ||
+         hasTreeAccess(resource.data.treeId, 'owner'));
+      allow delete: if isAuthenticated() &&
+        hasTreeAccess(resource.data.treeId, 'owner');
+    }
+  }
+} 

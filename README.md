@@ -1,142 +1,132 @@
-# Niazi Tribe - Collaborative World Family-Tree Platform
+# Niazi Tribe
 
-A modern, scalable genealogy platform that enables users to collaboratively build a unified world family tree with advanced features like smart matching, DNA integration, and GEDCOM import/export.
+A modern family tree application built with React, TypeScript, and Firebase.
 
-## 🏗️ Architecture
+## Features
 
-This is a monorepo containing:
+- Interactive family tree visualization with D3.js
+- Real-time updates and collaboration
+- Offline support with PWA capabilities
+- GEDCOM import/export
+- Photo and document management
+- Timeline visualization
+- Sharing and access control
+- PDF export functionality
 
-- **`apps/api`** - Node.js/Express REST API with GraphQL endpoints
-- **`apps/ui`** - Next.js React frontend with TypeScript
-- **`packages/shared`** - Shared types, utilities, and validation schemas
-- **`services/`** - Microservices for matching, GEDCOM processing, DNA analysis
-- **`jobs/`** - Background job processors and cron tasks
+## Tech Stack
 
-## 🚀 Features
+- **Frontend**: React with TypeScript
+- **UI Framework**: Material-UI
+- **State Management**: React Query & Context API
+- **Database**: Firebase Firestore
+- **Storage**: Firebase Storage
+- **Authentication**: Firebase Auth
+- **Hosting**: Firebase Hosting
+- **Visualization**: D3.js
+- **Build Tool**: Vite
+- **Package Manager**: npm
+- **Monorepo Management**: Turborepo
 
-### Core Features
-- ✅ Multi-tenant user authentication with role-based access
-- ✅ Interactive family tree visualization with infinite zoom/pan
-- ✅ Person profiles with rich biographical data
-- ✅ Relationship management (parents, children, spouses, adoptions)
-- ✅ Media management with S3-backed storage
-- ✅ Smart matching and duplicate detection
-- ✅ GEDCOM import/export (v5.5 compliance)
-- ✅ DNA data integration and analysis
-- ✅ Discussion forums and collaborative projects
-- ✅ Advanced search and filtering
-- ✅ Automated consistency checks
-
-### Technical Features
-- 🔐 JWT-based authentication with email verification
-- 📊 Graph database optimization (Neo4j/Neptune ready)
-- 🎨 Modern React UI with TypeScript
-- 🚀 Microservices architecture
-- 🐳 Docker containerization
-- 🧪 Comprehensive testing suite
-- 📚 OpenAPI documentation
-
-## 🛠️ Quick Start
-
-### Prerequisites
-- Node.js 18+
-- Docker & Docker Compose
-- Neo4j (or compatible graph database)
-
-### Installation
-
-1. **Clone and setup**
-   ```bash
-   git clone <repository-url>
-   cd niazi-tribe
-   npm run setup
-   ```
-
-2. **Start services**
-   ```bash
-   # Start database and external services
-   npm run docker:up
-   
-   # Start development servers
-   npm run dev
-   ```
-
-3. **Access the application**
-   - Frontend: http://localhost:3000
-   - API: http://localhost:4000
-   - API Docs: http://localhost:4000/docs
-
-## 📁 Project Structure
+## Project Structure
 
 ```
 niazi-tribe/
 ├── apps/
-│   ├── api/                 # Express API server
-│   └── ui/                  # Next.js frontend
-├── packages/
-│   └── shared/              # Shared utilities and types
+│   └── ui/               # React frontend application
 ├── services/
-│   ├── matching/            # Smart matching service
-│   ├── gedcom/              # GEDCOM import/export
-│   ├── dna/                 # DNA processing
-│   └── notifications/       # Email and push notifications
-├── jobs/
-│   ├── consistency-check/   # Data validation jobs
-│   └── background-tasks/    # Async processing
-├── docs/                    # Documentation and diagrams
-├── docker-compose.yml       # Development environment
-└── kubernetes/              # Production deployment configs
+│   ├── gedcom/          # GEDCOM processing service
+│   └── matching/        # Family matching algorithms
+├── packages/            # Shared packages
+└── firebase/           # Firebase configuration
 ```
 
-## 🧪 Testing
+## Getting Started
 
-```bash
-# Run all tests
-npm test
+### Prerequisites
 
-# Run specific test suites
-npm run test:unit
-npm run test:integration
-npm run test:e2e
-```
+- Node.js 18.x or later
+- npm 8.x or later
+- Firebase CLI
 
-## 📊 Database Schema
+### Installation
 
-The platform uses a graph database approach optimized for genealogical relationships:
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/yourusername/niazi-tribe.git
+   cd niazi-tribe
+   ```
 
-- **Nodes**: Person, Media, Source, Project, Discussion
-- **Relationships**: PARENT_OF, SPOUSE_OF, SIBLING_OF, ADOPTED_BY
-- **Properties**: Temporal data, privacy settings, verification status
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
 
-## 🚀 Deployment
+3. Set up Firebase:
+   ```bash
+   npm install -g firebase-tools
+   firebase login
+   firebase init
+   ```
+
+4. Create environment files:
+   ```bash
+   # apps/ui/.env
+   VITE_FIREBASE_API_KEY=your_api_key
+   VITE_FIREBASE_AUTH_DOMAIN=your_auth_domain
+   VITE_FIREBASE_PROJECT_ID=your_project_id
+   VITE_FIREBASE_STORAGE_BUCKET=your_storage_bucket
+   VITE_FIREBASE_MESSAGING_SENDER_ID=your_messaging_sender_id
+   VITE_FIREBASE_APP_ID=your_app_id
+   ```
 
 ### Development
+
+1. Start the development server:
+   ```bash
+   npm run dev
+   ```
+
+2. Start Firebase emulators:
+   ```bash
+   npm run firebase:emulators
+   ```
+
+The application will be available at `http://localhost:3000`.
+
+### Building for Production
+
+1. Build the application:
+   ```bash
+   npm run build
+   ```
+
+2. Deploy to Firebase:
+   ```bash
+   npm run firebase:deploy
+   ```
+
+## Testing
+
+Run the test suite:
 ```bash
-npm run docker:up
-npm run dev
+npm run test
 ```
 
-### Production
-```bash
-npm run build
-npm run docker:build
-# Deploy to Kubernetes
-kubectl apply -f kubernetes/
-```
-
-## 📖 API Documentation
-
-- REST API: `/docs` (Swagger UI)
-- GraphQL Playground: `/graphql`
-- Database Schema: `/docs/schema`
-
-## 🤝 Contributing
+## Contributing
 
 1. Fork the repository
-2. Create a feature branch
-3. Run tests and linting
-4. Submit a pull request
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
 
-## 📄 License
+## License
 
-MIT License - see LICENSE file for details 
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Acknowledgments
+
+- [D3.js](https://d3js.org/) for visualization
+- [Firebase](https://firebase.google.com/) for backend services
+- [Material-UI](https://mui.com/) for UI components
+- [React](https://reactjs.org/) for the frontend framework 

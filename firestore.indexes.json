@@ -1,0 +1,71 @@
+{
+  "indexes": [
+    {
+      "collectionGroup": "trees",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "isPublic", "order": "ASCENDING" },
+        { "fieldPath": "metadata.lastUpdated", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "persons",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "treeId", "order": "ASCENDING" },
+        { "fieldPath": "lastName", "order": "ASCENDING" },
+        { "fieldPath": "firstName", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "persons",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "treeId", "order": "ASCENDING" },
+        { "fieldPath": "birthDate", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "relationships",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "treeId", "order": "ASCENDING" },
+        { "fieldPath": "type", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "relationships",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "from", "order": "ASCENDING" },
+        { "fieldPath": "type", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "relationships",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "to", "order": "ASCENDING" },
+        { "fieldPath": "type", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "events",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "treeId", "order": "ASCENDING" },
+        { "fieldPath": "date", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "media",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "treeId", "order": "ASCENDING" },
+        { "fieldPath": "personId", "order": "ASCENDING" },
+        { "fieldPath": "type", "order": "ASCENDING" }
+      ]
+    }
+  ],
+  "fieldOverrides": []
+} 

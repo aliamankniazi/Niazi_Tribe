@@ -1,3 +1,0 @@
-return [
-    'name' => 'Niazi-Tribe API',
-    // ... rest of the config ... 
